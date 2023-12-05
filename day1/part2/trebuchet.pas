@@ -52,6 +52,15 @@ begin
 end;
 
 begin
+	(*
+	  Plan:
+	  	1. Iterate through all lines in file
+		2. For each line, look for the earliest "word digit" (one, two, etc),
+		   and then look for the earliest digit (1, 2, etc). Take the earlier of
+		   the two as the first digit
+		3. Repeat, but picking the latest of the matches as the second digit
+	*)
+
 	sum := 0;
 
 	(* Get filename from stdin *)
