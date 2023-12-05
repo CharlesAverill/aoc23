@@ -17,6 +17,7 @@ uses
 type 
     color = (red, green, blue);
 
+(* The numbers of each color of cube per cube set *)
 type
 cube_set = record
     r, g, b : cardinal;
@@ -52,6 +53,7 @@ var
     (* Output - sum of possible games *)
     sum_possible : cardinal;
 
+(* Count the number of occurrences of 'target' in 'str' *)
 function count_chars(str: string; target: Char): Integer;
 var
     i: Integer;
@@ -64,11 +66,13 @@ begin
     end;
 end;
 
+(* Get the string representation of a cube set *)
 function string_of_cube_set(c: cube_set) : string;
 begin
     string_of_cube_set := concat(inttostr(c.r), ' red - ', inttostr(c.g), ' green - ', inttostr(c.b), ' blue')
 end;
 
+(* Parse a game string into a 'game' record *)
 function parse_game(game_str: string) : game;
 var
     i, count: cardinal;
@@ -104,6 +108,7 @@ begin
     end;
 end;
 
+(* Print a string representation of a 'game' *)
 procedure print_game(g: game);
 var 
     set_idx : cardinal;

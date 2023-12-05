@@ -2,7 +2,8 @@ program Cubes;
 (* 
     Given a list of games in which cubes are randomly from a bag in sets, 
     determine the least number of cubes of each color that must be in the bag
-    for each game to be possible.
+    for each game to be possible. This is just the maximum of each color in 
+    a game. Print the sum of the "powers" (product of min colors) of all games.
 *)
 
 uses 
@@ -49,6 +50,7 @@ var
     (* Output - power (product of mins) of possible games *)
     sum_power : cardinal;
 
+(* Count the number of occurrences of 'target' in 'str' *)
 function count_chars(str: string; target: Char): Integer;
 var
     i: Integer;
@@ -61,11 +63,13 @@ begin
     end;
 end;
 
+(* Get the string representation of a cube set *)
 function string_of_cube_set(c: cube_set) : string;
 begin
     string_of_cube_set := concat(inttostr(c.r), ' red - ', inttostr(c.g), ' green - ', inttostr(c.b), ' blue')
 end;
 
+(* Parse a game string into a 'game' record *)
 function parse_game(game_str: string) : game;
 var
     i, count: cardinal;
@@ -101,6 +105,7 @@ begin
     end;
 end;
 
+(* Print a string representation of a 'game' *)
 procedure print_game(g: game);
 var 
     set_idx : cardinal;
