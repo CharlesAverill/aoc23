@@ -6,12 +6,12 @@ program Trebuchet;
 
 var
 	(* Input filename *)
-	fn: String;
+	fn: string;
 	(* Input file *)
 	f: text;
 
 	(* Current line of input file *)
-    line: String;
+    line: string;
 	(* Index into line *)
 	i: integer;
 
@@ -19,11 +19,13 @@ var
 	(* 'cardinal' refers to a standard 4-byte unsigned integer type *)
 	sum: cardinal;
 
+(* Determine if a character is '0'..'9' *)
 function is_digit(c: char) : boolean;
 begin
 	is_digit := (48 <= ord(c)) and (ord(c) <= 57)
 end;
 
+(* Convert a character in '0'..'9' to its corresponding integer value *)
 function digit_to_integer(c: char) : integer;
 begin
 	digit_to_integer := ord(c) - 48
