@@ -76,8 +76,6 @@ begin
 	begin
 		readln(f, line);
 
-		write(line, ' ');
-
 		to_add := 0;
 
 		(* Look forward for digit words *)
@@ -112,7 +110,6 @@ begin
 				break
 			end
 		end;
-		write((to_add / 10):0:0);
 
 		(* Add to sum and clear to_add for reuse *)
 		sum := sum + to_add;
@@ -145,11 +142,8 @@ begin
                 break
             end;
         end;
-		write(to_add);
 
 		sum := sum + to_add;
-
-		writeln(' ', sum);
 	end;
 
 	writeln(sum);

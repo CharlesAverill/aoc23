@@ -56,7 +56,7 @@ var
     i: Integer;
 begin
     count_chars := 0;
-    for i := 1 to Length(str) do
+    for i := 1 to length(str) do
     begin
         if str[i] = target then
             inc(count_chars);
