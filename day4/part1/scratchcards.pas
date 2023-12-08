@@ -119,4 +119,6 @@ begin
     end;
 
     writeln('Sum of points: ', sum);
+
+    close(f);
 end.

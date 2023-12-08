@@ -184,19 +184,6 @@ begin
         end;
     end;
 
-    // for i := 0 to length(numbers) - 1 do 
-    // begin
-    //     print_num(numbers[i]);
-    // end;
-
-    // for i := 0 to length(symbols) - 1 do 
-    // begin
-    //     write('Symbol at (', symbols[i].x, ', ', symbols[i].y, ')');
-    //     if symbols[i].is_gear then
-    //         write(' - GEAR');
-    //     writeln();
-    // end;
-
     sum := 0;
 
     (* For each gear, check if exactly two numbers are in range *)
@@ -231,4 +218,6 @@ begin
     end;
 
     writeln('Sum of gear ratios: ', sum);
+
+    close(f);
 end.

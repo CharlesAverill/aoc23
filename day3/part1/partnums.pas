@@ -203,4 +203,6 @@ begin
     end;
 
     writeln('Sum of part numbers: ', sum);
+
+    close(f);
 end.

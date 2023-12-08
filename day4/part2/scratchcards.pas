@@ -147,4 +147,6 @@ begin
     end;
 
     writeln('Number of scratchcards: ', sum);
+
+    close(f);
 end.

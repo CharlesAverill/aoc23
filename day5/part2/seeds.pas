@@ -195,4 +195,6 @@ begin
     end;
 
     writeln('Minimum location: ', min_loc);
+
+    close(f);
 end.
