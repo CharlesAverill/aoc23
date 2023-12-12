@@ -1,4 +1,4 @@
-program race;
+program Race;
 (*
     Consider a boat with a button. While the button is being held, the boat's
     speed charges (if you hold the button for 3ms and release, it moves at
