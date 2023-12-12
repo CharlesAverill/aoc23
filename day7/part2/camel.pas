@@ -6,6 +6,10 @@ program Camel;
     consider J cards as Jokers, which take the value of whichever card would've
     made the hand the strongest possible via the same scoring rules, except in
     breaking ties, when J is now the weakest card.
+
+    Note: this solution is definitely the "I didn't want to think about it
+    too hard" solution for this problem. Will maybe come back for a more
+    elegant approach later.
 *)
 
 uses
