@@ -19,6 +19,16 @@ hand = record
     bid: cardinal;
 end;
 
+type 
+    hands_array = array of hand;
+
+type 
+    cardinal_array_array = array of array of cardinal;
+
+const
+    MIN_CARD_VAL = 2;
+    MAX_CARD_VAL = 14; (* For aces *)
+
 var
     (* Input filename *)
     fn: string;
@@ -34,9 +44,6 @@ var
 
     winnings: qword;
 
-type 
-    hands_array = array of hand;
-
 (* Determine if a character is '0'..'9' *)
 function is_digit(c: char) : boolean;
 begin
@@ -44,7 +51,7 @@ begin
 end;
 
 (* Return the number of pairs in a hand *)
-function n_pairs(h: hand) : cardinal;
+function n_pairs(cards: array of cardinal) : cardinal;
 var
     i, j: cardinal;
     found: cardinal; 
@@ -52,17 +59,17 @@ begin
     n_pairs := 0;
     found := 0;
 
-    for i := 0 to length(h.cards) - 1 do
+    for i := 0 to length(cards) - 1 do
     begin
-        if h.cards[i] = found then
+        if cards[i] = found then
             continue;
         
-        for j := i + 1 to length(h.cards) - 1 do
+        for j := i + 1 to length(cards) - 1 do
         begin
-            if h.cards[i] = h.cards[j] then
+            if cards[i] = cards[j] then
             begin
                 n_pairs := n_pairs + 1;
-                found := h.cards[i];
+                found := cards[i];
                 break;
             end;
         end;
@@ -70,7 +77,7 @@ begin
 end;
 
 (* Return the largest number of like cards in a hand *)
-function n_of_a_kind(h: hand) : cardinal;
+function n_of_a_kind(cards: array of cardinal) : cardinal;
 var
     c: cardinal;
     counts: array[2..14] of cardinal;
@@ -78,7 +85,7 @@ begin
     for c := 2 to 14 do
         counts[c] := 0;
 
-    for c in h.cards do 
+    for c in cards do 
     begin
         counts[c] := counts[c] + 1;
     end;
@@ -91,7 +98,7 @@ begin
 end;
 
 (* Determine if hand is a full house *)
-function full_house(h: hand) : boolean;
+function full_house(cards: array of cardinal) : boolean;
 var
     c: cardinal;
     counts: array[2..14] of cardinal;
@@ -100,7 +107,7 @@ begin
     for c := 2 to 14 do
         counts[c] := 0;
 
-    for c in h.cards do 
+    for c in cards do 
     begin
         counts[c] := counts[c] + 1;
     end;
@@ -128,41 +135,145 @@ end;
     - 1: One pair
     - 0: High card
 *)
-function classify_hand(h: hand) : cardinal;
+function classify_hand(cards: array of cardinal) : cardinal;
 var
     n: cardinal;
 begin
     (* Handle high card, one/two pair case *)
-    classify_hand := n_pairs(h);
+    classify_hand := n_pairs(cards);
 
     (* Handle n of a kind cases *)
-    n := n_of_a_kind(h);
+    n := n_of_a_kind(cards);
     if n = 3 then
         classify_hand := max(classify_hand, 3)
     else if n > 3 then
         classify_hand := max(classify_hand, n + 1);
 
     (* Handle full house *)
-    if full_house(h) then
+    if full_house(cards) then
         classify_hand := max(classify_hand, 4);
+end;
+
+(*
+    Given a hand with some number of jokers in it, return a list of all possible
+    hands that the original hand could be, given that jokers are wildcards
+*)
+function hand_permutations(cards: array of cardinal) : cardinal_array_array;
+var
+    c: cardinal;
+    i: cardinal;
+    new_hand: cardinal_array_array;
+    existing_new_hand, temp: array of cardinal;
+begin
+    setlength(hand_permutations, 1);
+    setlength(hand_permutations[0], 0);
+
+    for c in cards do
+    begin
+        if c = 1 then
+        begin
+            setlength(new_hand, 0);
+            for i := MIN_CARD_VAL to MAX_CARD_VAL do
+            begin
+                for existing_new_hand in hand_permutations do
+                begin
+                    setlength(temp, 1);
+                    temp[0] := i;
+                    setlength(new_hand, length(new_hand) + 1);
+                    new_hand[high(new_hand)] := concat(existing_new_hand, temp);
+                end;
+            end;
+            hand_permutations := new_hand;
+        end else 
+        begin
+            i := 0;
+            while i <= high(hand_permutations) do
+            begin
+                setlength(hand_permutations[i], length(hand_permutations[i]) + 1);
+                hand_permutations[i][high(hand_permutations[i])] := c;
+                i := i + 1;
+            end;
+        end;
+    end;
+end;
+
+function string_of_hand(h: hand) : string;
+var
+    c: cardinal;
+    v: string;
+begin
+    string_of_hand := '';
+    for c in h.cards do
+    begin
+        if c = 1 then
+            v := 'J'
+        else if c < 10 then
+            v := inttostr(c)
+        else if c = 10 then
+            v := 'T'
+        else if c = 12 then
+            v := 'Q'
+        else if c = 13 then
+            v := 'K'
+        else if c = 14 then
+            v := 'A';
+        
+        string_of_hand := concat(string_of_hand, v);
+    end;
+
+    string_of_hand := concat(string_of_hand, ' ', inttostr(h.bid));
 end;
 
 (* Compare two hands. Return 1 if A > B, 0 if A = B, -1 if A < B *)
 function compare_hands(A: hand; B: hand) : integer;
 var
+    h: hand;
     i: cardinal;
+    perm: array of cardinal;
+    A_max, B_max, tmax: cardinal;
+    A_max_cards, B_max_cards, 
+        A_original_cards, B_original_cards: array of cardinal;
 begin
-    if classify_hand(A) < classify_hand(B) then
+    A_max := 0;
+    B_max := 0;
+    A_original_cards := A.cards;
+    B_original_cards := B.cards;
+
+    A_max_cards := A.cards;
+    for perm in hand_permutations(A.cards) do
+    begin
+        tmax := classify_hand(perm);
+        if tmax > A_max then
+        begin
+            A_max := tmax;
+            A_max_cards := perm;
+        end;
+    end;
+    A.cards := A_max_cards;
+
+    B_max_cards := B.cards;
+    for perm in hand_permutations(B.cards) do
+    begin
+        tmax := classify_hand(perm);
+        if tmax > B_max then
+        begin
+            B_max := tmax;
+            B_max_cards := perm;
+        end;
+    end;
+    B.cards := B_max_cards;
+
+    if classify_hand(A.cards) < classify_hand(B.cards) then
         compare_hands := -1
-    else if classify_hand(A) > classify_hand(B) then
+    else if classify_hand(A.cards) > classify_hand(B.cards) then
         compare_hands := 1
     else
     begin
-        for i := 0 to length(A.cards) do
+        for i := 0 to length(A_original_cards) do
         begin
-            if A.cards[i] = B.cards[i] then
+            if A_original_cards[i] = B_original_cards[i] then
                 continue
-            else if A.cards[i] < B.cards[i] then
+            else if A_original_cards[i] < B_original_cards[i] then
                 compare_hands := -1
             else 
                 compare_hands := 1;
@@ -189,33 +300,6 @@ begin
             end;
         end;
     end;
-end;
-
-function string_of_hand(h: hand) : string;
-var
-    c: cardinal;
-    v: string;
-begin
-    string_of_hand := '';
-    for c in h.cards do
-    begin
-        if c < 10 then
-            v := inttostr(c)
-        else if c = 10 then
-            v := 'T'
-        else if c = 11 then
-            v := 'J'
-        else if c = 12 then
-            v := 'Q'
-        else if c = 13 then
-            v := 'K'
-        else if c = 14 then
-            v := 'A';
-        
-        string_of_hand := concat(string_of_hand, v);
-    end;
-
-    string_of_hand := concat(string_of_hand, ' ', inttostr(h.bid));
 end;
 
 begin
@@ -264,7 +348,7 @@ begin
     winnings := 0;
     for i := 0 to length(hands) - 1 do
     begin
-        writeln(string_of_hand(hands[i]), ' ', classify_hand(hands[i]));
+        writeln(string_of_hand(hands[i]));
         winnings := winnings + ((i + 1) * hands[i].bid);
     end;
 
