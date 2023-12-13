@@ -31,7 +31,7 @@ var
     line: string;
 
     (* String of left/right instructions *)
-    instructions: string;
+    instructions: ansistring;
     (* Which instruction we're currently at *)
     ictr: cardinal;
 
@@ -94,17 +94,16 @@ begin
     current := find(name_to_ptr, 'AAA');
     ictr := 1;
     steps := 0;
+    (* Traverse graph *)
     while current.name <> 'ZZZ' do
     begin
-        write(ictr, ' ', instructions[ictr], ' ', current.name, ' -> ');
-
         if instructions[ictr] = 'L' then
             current := find(name_to_ptr, current.left)
         else
             current := find(name_to_ptr, current.right);
+        (* Keeps ictr in range [1, length(instructions)] *)
         ictr := max(1, (ictr + 1) mod (length(instructions) + 1));
         steps := steps + 1;
-        writeln(current.name);
     end;
 
     writeln('Steps: ', steps);

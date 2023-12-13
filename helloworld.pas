@@ -10,14 +10,13 @@ end;
 
 function fact_it(n: integer): integer;
 var
-	prod, i : integer;
+	i : integer;
 begin
-	prod := 1;
+	fact_it := 1;
 	for i := 1 to n do
 	begin
-		prod := prod * i;
+		fact_it := fact_it * i;
 	end;
-	fact_it := prod;
 end;
 
 begin
