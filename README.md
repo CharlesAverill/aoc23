@@ -2,7 +2,8 @@
 
 This is my first time participating in [Advent of Code](https://adventofcode.com/).
 I will be participating using the [Pascal](https://en.wikipedia.org/wiki/Pascal_(programming_language)) Programming Language, which I have not used before. 
-All solutions are compiled using [fpc](https://www.freepascal.org/) version 3.2.2
+All solutions are compiled using [fpc](https://www.freepascal.org/) version 3.2.2.
+The AoC FAQ asks that participants not post problem descriptions or challenge inputs, so you can grab those from [the calendar](https://adventofcode.com/2023).
 
 Here's a [sample of Pascal code](helloworld.pas):
 
